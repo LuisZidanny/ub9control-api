@@ -64,13 +64,13 @@ public class LancamentoResource {
 	}
 	
 	@GetMapping("/diario/{codigo}")
-	public ResponseEntity<LancamentoDto> findAllLancamentoDiario(@PathVariable Long codigo){
+	public LancamentoDto findAllLancamentoDiario(@PathVariable Long codigo){
 		Lancamento lancamentos = lancamentoRepository.findBylancamentoDiario(codigo);
         if(lancamentos == null) {
         	lancamentos = new Lancamento();
 		}
 		LancamentoDto lancamentoDtos = new LancamentoDto(lancamentos);
-		return lancamentoDtos != null ? ResponseEntity.ok(lancamentoDtos) : ResponseEntity.notFound().build();
+		return lancamentoDtos;
 	}
 
 	@GetMapping("/{codigo}")
