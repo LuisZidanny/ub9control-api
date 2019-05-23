@@ -1,6 +1,7 @@
 package br.com.applicationfinancialmanagement.resource;
 
 import java.net.URI;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.applicationfinancialmanagement.model.Usuario;
 import br.com.applicationfinancialmanagement.repository.UsuarioRepository;
+import br.com.applicationfinancialmanagement.resource.exception.UsuarioExistenteException;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -29,6 +31,10 @@ public class UsuarioResource {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<Usuario> save(@RequestBody Usuario usuario){
+		Optional<Usuario> user = usuarioRepository.findByEmail(usuario.getEmail());
+		if(user.isPresent()) {
+			throw new UsuarioExistenteException();
+		}
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
 				.buildAndExpand(usuarioSalvo.getCodigo()).toUri();
@@ -46,6 +52,18 @@ public class UsuarioResource {
 		try {
 			Usuario usuarioSalvo = buscarPeloCodigo(codigo);
 			BeanUtils.copyProperties(usuario, usuarioSalvo, "codigo", "senha");
+			usuarioRepository.save(usuarioSalvo);
+			return ResponseEntity.ok(usuarioSalvo);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.notFound().build();
+		}
+	}
+	
+	@PutMapping("/{codigo}/senha")
+	public ResponseEntity<Usuario> atualizarSenha(@PathVariable Long codigo, @RequestBody String senha) {
+		try {
+			Usuario usuarioSalvo = buscarPeloCodigo(codigo);
+			usuarioSalvo.setSenha(senha);
 			usuarioRepository.save(usuarioSalvo);
 			return ResponseEntity.ok(usuarioSalvo);
 		} catch (IllegalArgumentException e) {

@@ -23,6 +23,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import br.com.applicationfinancialmanagement.resource.exception.LancamentoExistenteException;
+import br.com.applicationfinancialmanagement.resource.exception.UsuarioExistenteException;
 
 
 @ControllerAdvice
@@ -68,6 +69,14 @@ public class Applicationfinancialmanagementhandler extends ResponseEntityExcepti
 	@ExceptionHandler({ LancamentoExistenteException.class } )
 	public ResponseEntity<Object> handlePessoaExistenteException(LancamentoExistenteException ex, WebRequest request) {
 		String mensagemUsuario = messageSource.getMessage("lancamento.existente", null, LocaleContextHolder.getLocale());
+		String mensagemDesenvolvedor = ex.toString();
+		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
+		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+	}
+	
+	@ExceptionHandler({ UsuarioExistenteException.class } )
+	public ResponseEntity<Object> handlePessoaExistenteException(UsuarioExistenteException ex, WebRequest request) {
+		String mensagemUsuario = messageSource.getMessage("usuario.existente", null, LocaleContextHolder.getLocale());
 		String mensagemDesenvolvedor = ex.toString();
 		List<Erro> erros = Arrays.asList(new Erro(mensagemUsuario, mensagemDesenvolvedor));
 		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.NOT_FOUND, request);

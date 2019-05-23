@@ -5,8 +5,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("applicationfinancialmanagement")
 public class ApplicationfinancialmanagementApiProperty {
 	
-	private String originPermitida = "https://ub9control-ui.herokuapp.com";
-
+	//private String originPermitida = "https://ub9control-ui.herokuapp.com";
+	private String originPermitida = "http://localhost:4200";
+	
 	private final Seguranca seguranca = new Seguranca();
 
 	public Seguranca getSeguranca() {
